@@ -5,6 +5,9 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"working-with-module/utils"
+
+	"github.com/pallinder/go-randomdata"
 )
 
 const accountBalanceFile = "balance.txt"
@@ -39,6 +42,7 @@ func main() {
 	fmt.Println("Welcome to Go Bank!")
 
 	for {
+		fmt.Println(randomdata.SillyName())
 		presentOptions()
 
 		var choice int
@@ -63,7 +67,7 @@ func main() {
 
 			accountBalance += depositAmount // accountBalance = accountBalance + depositAmount
 			fmt.Println("Balance updated! New amount:", accountBalance)
-			WriteBalanceToFile(accountBalance, accountBalanceFile)
+			utils.WriteBalanceToFile(accountBalanceFile, accountBalance)
 		case 3:
 			fmt.Print("Withdrawal amount: ")
 			var withdrawalAmount float64
@@ -81,7 +85,7 @@ func main() {
 
 			accountBalance -= withdrawalAmount // accountBalance = accountBalance + depositAmount
 			fmt.Println("Balance updated! New amount:", accountBalance)
-			WriteBalanceToFile(accountBalance, accountBalanceFile)
+			utils.WriteBalanceToFile(accountBalanceFile, accountBalance)
 		default:
 			fmt.Println("Goodbye!")
 			fmt.Println("Thanks for choosing our bank")
