@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"time"
 )
 
 type Filemanager struct {
@@ -33,6 +34,7 @@ func (fm *Filemanager) WriteJSON(data interface{}) error {
 		return err
 
 	}
+	time.Sleep(time.Second * 3)
 	err = os.WriteFile(fm.OutputFileName, arr, os.FileMode(0644))
 	if err != nil {
 		return err
