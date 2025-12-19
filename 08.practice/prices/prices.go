@@ -2,59 +2,51 @@ package prices
 
 import (
 	"fmt"
-	"os"
-	"strconv"
-	"strings"
+	"price-calculator/conversion"
+	"price-calculator/filemanager"
 )
 
 type TaxIncludedPriceJob struct {
-	TaxRate        float64
-	InputPrices    []float64
-	TaxInputPrices map[string]float64
+	TaxRate        float64                 `json:"input_prices"`
+	InputPrices    []float64               `json:"tax_rate"`
+	TaxInputPrices map[string]string       `json:"tax_input_prices"`
+	IOFileManager  filemanager.Filemanager `json:"-"`
 }
 
-func NewTaxIncludedPriceJob(taxRate float64) *TaxIncludedPriceJob {
+func NewTaxIncludedPriceJob(taxRate float64, f filemanager.Filemanager) *TaxIncludedPriceJob {
 
 	return &TaxIncludedPriceJob{
-		TaxRate: taxRate,
+		TaxRate:       taxRate,
+		IOFileManager: f,
 	}
 
 }
 
 func (Job *TaxIncludedPriceJob) Process() {
 	Job.LoadData()
-	result := make(map[string]float64)
+	result := make(map[string]string)
 	// fmt.Println(Job.InputPrices)
 
 	for _, price := range Job.InputPrices {
-		result[fmt.Sprintf("%.2f", price)] = price * (1 + Job.TaxRate)
+		r := price * (1 + Job.TaxRate)
+		s := fmt.Sprintf("%.2f", r)
+		result[fmt.Sprintf("%.2f", price)] = s
 	}
-	fmt.Println(result)
+	// path := fmt.Sprintf("%.2f_data.json", Job.TaxRate*100)
+	// fmt.Println(path)
+
+	Job.TaxInputPrices = result
+	Job.IOFileManager.WriteJSON(Job)
 
 }
 
 func (Job *TaxIncludedPriceJob) LoadData() {
-	file, err := os.ReadFile("prices.txt")
-
+	lines, err := Job.IOFileManager.ReadFile()
 	if err != nil {
-		fmt.Println("error")
-		return
+		panic(err)
 	}
-	str := string(file)
+	gg, _ := conversion.StringsToFloat(lines)
 
-	lines := strings.Split(str, "\n")
-
-	gg := []float64{}
-
-	for _, val := range lines {
-		val = strings.TrimSpace(val)
-		temp, err := strconv.ParseFloat(val, 64)
-
-		if err != nil {
-			return
-		}
-		gg = append(gg, temp)
-	}
 	// fmt.Println(gg)
 	Job.InputPrices = gg
 
