@@ -41,6 +41,7 @@ func AuthMiddleware() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
+		fmt.Println(claims.ID, "MW")
 		c.Set("userId", claims.ID)
 		c.Set("email", claims.Email)
 		c.Next()

@@ -13,7 +13,7 @@ type Event struct {
 	Description string    `json:"description"`
 	Location    string    `json:"location"`
 	DateTime    time.Time `json:"datetime"`
-	UserId      int       `json:"userId"`
+	UserId      int64     `json:"userId"`
 }
 
 var events []Event
@@ -31,7 +31,7 @@ func (E *Event) Save() error {
 
 }
 func GetAllEvents() ([]Event, error) {
-	query := `SELECT * FROM Event`
+	query := `SELECT id, name, description, location, dateTime, UserId FROM Event`
 	rows, err := db.DB.Query(query)
 	if err != nil {
 		return nil, err
@@ -65,7 +65,7 @@ func (e Event) GetEventById(id string) (Event, error) {
 		return Event{}, err
 	}
 	var event Event
-	err = db.DB.QueryRow(`SELECT * FROM Event where ID=?`, idval).Scan(&event.ID,
+	err = db.DB.QueryRow(`SELECT id, name, description, location, dateTime, UserId FROM Event where ID=?`, idval).Scan(&event.ID,
 		&event.Name,
 		&event.Description,
 		&event.Location,

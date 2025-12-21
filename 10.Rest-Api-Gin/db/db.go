@@ -26,6 +26,7 @@ func INITDB() {
 
 }
 func createTables() {
+	DB.Exec(`DROP TABLE Event`)
 	_, err := DB.Exec(`CREATE TABLE  IF NOT EXISTS User(
 	id INTEGER PRIMARY KEY AUTOINCREMENT,
 	email TEXT NOT NULL unique,
@@ -41,7 +42,9 @@ func createTables() {
 	description TEXT NOT NULL,
 	location TEXT NOT NULL,
 	dateTime DATETIME DEFAULT CURRENT_TIMESTAMP  NOT NULL,
-	UserId INTEGER
+	UserId INTEGER NOT NULL,
+	FOREIGN KEY (UserId) REFERENCES User(id)
+	
 	)
 	`
 	_, err = DB.Exec(createEventsTable)

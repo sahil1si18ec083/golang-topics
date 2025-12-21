@@ -24,12 +24,15 @@ func GetEvents(c *gin.Context) {
 func CreateEvent(c *gin.Context) {
 	var req models.Event
 	err := c.ShouldBind(&req)
+	fmt.Println(req)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
 		})
 		return
 	}
+	userId := c.GetInt64("userId")
+	req.UserId = userId
 
 	err = req.Save()
 	if err != nil {
@@ -38,8 +41,7 @@ func CreateEvent(c *gin.Context) {
 			"message": "Could not create event",
 		})
 	}
-	userId := c.GetInt64("userId")
-	req.UserId = int(userId)
+
 	c.JSON(http.StatusCreated, req)
 
 }
@@ -69,7 +71,27 @@ func UpdateById(c *gin.Context) {
 		return
 	}
 	var req models.Event
-	_, err = req.GetEventById(id)
+	event, err := req.GetEventById(id)
+	fmt.Println(event)
+	userid, ok := c.Get("userId")
+	fmt.Println(ok)
+	fmt.Println(event.UserId, "a")
+	fmt.Println(userid, "b")
+	useridval, ok := userid.(int64)
+	if !ok {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"message": "Invalid user",
+		})
+		return
+	}
+
+	if event.UserId != useridval {
+
+		c.JSON(http.StatusForbidden, gin.H{
+			"message": "Not allowed",
+		})
+		return
+	}
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "cannot find id",
@@ -106,10 +128,29 @@ func DeleteById(c *gin.Context) {
 		return
 	}
 	var E models.Event
-	_, err = E.GetEventById(id)
+	event, err := E.GetEventById(id)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "cannot find id",
+		})
+		return
+	}
+	userid, ok := c.Get("userId")
+	fmt.Println(ok)
+	fmt.Println(event.UserId, "a")
+	fmt.Println(userid, "b")
+	useridval, ok := userid.(int64)
+	if !ok {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"message": "Invalid user",
+		})
+		return
+	}
+
+	if event.UserId != useridval {
+
+		c.JSON(http.StatusForbidden, gin.H{
+			"message": "Not allowed",
 		})
 		return
 	}
