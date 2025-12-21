@@ -18,24 +18,6 @@ type Event struct {
 
 var events []Event
 
-// func (E *Event) Save() error {
-// 	query := `INSERT INTO  Event(Name,Description,Location,DateTime,UserId)
-// 	 VALUES(?, ?, ?, ?, ?),`
-// 	stmt, err := db.DB.Prepare(query)
-// 	if err != nil {
-// 		return err
-// 	}
-// 	defer stmt.Close()
-// 	result, err := stmt.Exec(E.Name, E.Description, E.Location, E.DateTime, E.UserId)
-// 	if err != nil {
-// 		return err
-// 	}
-// 	id, err := result.LastInsertId()
-// 	E.ID = id
-
-// 	return err
-
-// }
 func (E *Event) Save() error {
 	res, err := db.DB.Exec(`INSERT INTO  Event(Name,Description,Location,DateTime,UserId) 
 	 VALUES(?, ?, ?, ?, ?)`, E.Name, E.Description, E.Location, E.DateTime, E.UserId)
@@ -44,6 +26,7 @@ func (E *Event) Save() error {
 	}
 	id, err := res.LastInsertId()
 	E.ID = id
+
 	return err
 
 }

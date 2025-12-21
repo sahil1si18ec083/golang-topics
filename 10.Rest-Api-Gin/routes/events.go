@@ -30,7 +30,7 @@ func CreateEvent(c *gin.Context) {
 		})
 		return
 	}
-	fmt.Println("rrrrrrrrrrrrrrrrr")
+
 	err = req.Save()
 	if err != nil {
 		fmt.Println(err)
@@ -38,6 +38,8 @@ func CreateEvent(c *gin.Context) {
 			"message": "Could not create event",
 		})
 	}
+	userId := c.GetInt64("userId")
+	req.UserId = int(userId)
 	c.JSON(http.StatusCreated, req)
 
 }
