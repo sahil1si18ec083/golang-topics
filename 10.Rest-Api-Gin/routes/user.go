@@ -28,6 +28,8 @@ func Signup(c *gin.Context) {
 	req.Password = hashedPassword
 
 	err = req.Save()
+	fmt.Println(req)
+	fmt.Println("family man")
 	if err != nil {
 		fmt.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -35,7 +37,20 @@ func Signup(c *gin.Context) {
 		})
 		return
 	}
-	c.JSON(http.StatusCreated, req)
+	token, err := utils.GenerateJWT(req.Email, req.ID)
+	if err != nil {
+		fmt.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Could not create user",
+		})
+		return
+	}
+	fmt.Println(token)
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Signup successfully",
+		"token":   token,
+	})
 
 }
 func Login(c *gin.Context) {
@@ -63,8 +78,18 @@ func Login(c *gin.Context) {
 		})
 		return
 	}
+	token, err := utils.GenerateJWT(user.Email, user.ID)
+	if err != nil {
+		fmt.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Could not create user",
+		})
+		return
+	}
+	fmt.Println(token)
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Login successfully",
+		"token":   token,
 	})
 
 }
