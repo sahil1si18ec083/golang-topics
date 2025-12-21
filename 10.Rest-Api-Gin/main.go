@@ -14,8 +14,7 @@ func main() {
 	fmt.Println("hello")
 	r := gin.Default()
 	fmt.Println(r)
-	r.GET("/events", routes.GetEvents)
-	r.POST("/events", routes.CreateEvent)
-	r.GET("/event/:id", routes.GetEventById)
+	routes.RegisterEventsRoute(r)
+	routes.RegisterUserRoutes(r)
 	r.Run(":8080")
 }

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"rest-api/models"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -53,6 +54,73 @@ func GetEventById(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, gin.H{
 		"message": resp,
+	})
+
+}
+func UpdateById(c *gin.Context) {
+	id := c.Param("id")
+	idval, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Bad Request",
+		})
+		return
+	}
+	var req models.Event
+	_, err = req.GetEventById(id)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "cannot find id",
+		})
+		return
+	}
+
+	err = c.BindJSON(&req)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Bad Request",
+		})
+	}
+	var e models.Event
+	_, err = e.UpdateById(idval, req)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Internal server Error",
+		})
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Updated ",
+	})
+
+}
+
+func DeleteById(c *gin.Context) {
+	id := c.Param("id")
+	idval, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Bad Request",
+		})
+		return
+	}
+	var E models.Event
+	_, err = E.GetEventById(id)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "cannot find id",
+		})
+		return
+	}
+	err = E.Delete(idval)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "cannot delete",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Deleted Successfully",
 	})
 
 }

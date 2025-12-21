@@ -96,3 +96,22 @@ func (e Event) GetEventById(id string) (Event, error) {
 	return event, nil
 
 }
+func (e *Event) UpdateById(id int64, req Event) (*Event, error) {
+	_, err := db.DB.Exec(`Update Event SET 
+	Name = ?  
+	 WHERE ID =?
+	`, req.Name, id)
+	fmt.Println("dddddddddddd")
+
+	if err != nil {
+		return &Event{}, err
+	}
+	fmt.Println(e)
+	return e, nil
+
+}
+func (e *Event) Delete(id int64) error {
+	_, err := db.DB.Exec(`DELETE from Event where ID = ?`, id)
+	return err
+
+}

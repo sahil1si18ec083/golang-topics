@@ -2,6 +2,7 @@ package db
 
 import (
 	"database/sql"
+	"fmt"
 
 	_ "modernc.org/sqlite"
 )
@@ -25,6 +26,14 @@ func INITDB() {
 
 }
 func createTables() {
+	_, err := DB.Exec(`CREATE TABLE  IF NOT EXISTS User(
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
+	email TEXT NOT NULL unique,
+	password TEXT NOT NULL )`)
+	fmt.Println(err)
+	if err != nil {
+		panic("could not create users table")
+	}
 	createEventsTable := `
 	CREATE TABLE IF NOT EXISTS Event (
 	id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -35,7 +44,7 @@ func createTables() {
 	UserId INTEGER
 	)
 	`
-	_, err := DB.Exec(createEventsTable)
+	_, err = DB.Exec(createEventsTable)
 	if err != nil {
 		panic("could not create events table")
 	}
